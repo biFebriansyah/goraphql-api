@@ -7,7 +7,8 @@ import (
 )
 
 type Resolver struct {
-	UserService *service.UserService
+	UserService    *service.UserService
+	ProductService *service.ProductService
 }
 
 type mutationResolver struct{ *Resolver }

@@ -31,9 +31,16 @@ func graphServer() *handler.Server {
 	mongoDB := NewMongo()
 
 	userCollection := mongoDB.Collection("users")
+	productCollection := mongoDB.Collection("product")
 	userService := service.NewUserService(userCollection)
+	productService := service.NewProductService(productCollection)
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{UserService: userService}}))
+	resolver := graph.Resolver{
+		UserService:    userService,
+		ProductService: productService,
+	}
+
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &resolver}))
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
