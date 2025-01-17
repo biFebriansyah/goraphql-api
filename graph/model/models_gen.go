@@ -6,28 +6,28 @@ type Mutation struct {
 }
 
 type NewProduct struct {
-	Name  string `json:"name"`
-	Price int32  `json:"price"`
-	Stock int32  `json:"stock"`
+	Name  string `json:"name" bson:"name"`
+	Price int32  `json:"price" bson:"price"`
+	Stock int32  `json:"stock" bson:"stock"`
 }
 
 type NewUser struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name  string `json:"name" bson:"name"`
+	Email string `json:"email" bson:"email"`
 }
 
 type Products struct {
-	ID    string `json:"_id"`
-	Name  string `json:"name"`
-	Price int32  `json:"price"`
-	Stock int32  `json:"stock"`
+	ID    string `json:"_id" bson:"_id"`
+	Name  string `json:"name" bson:"name"`
+	Price int32  `json:"price" bson:"price"`
+	Stock int32  `json:"stock" bson:"stock"`
 }
 
 type Query struct {
 }
 
 type Users struct {
-	ID    string `json:"_id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID    string `json:"_id" bson:"_id"`
+	Name  string `json:"name" bson:"name"`
+	Email string `json:"email" bson:"email"`
 }

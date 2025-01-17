@@ -1,9 +1,9 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/biFebriansyah/goraphql/graph/model"
@@ -23,21 +23,23 @@ func (user *UserService) GetAll() ([]*model.Users, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	cur, err := user.Find(ctx, bson.D{})
+	cur, err := user.Find(ctx, bson.M{})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to find user: %w", err)
 	}
 
 	defer cur.Close(ctx)
 	result := []*model.Users{}
 
 	for cur.Next(ctx) {
-		var data model.Users
-		if err := cur.Decode(&data); err != nil {
-			log.Fatal(err)
+		var data *model.Users
+		decoder := bson.NewDecoder(bson.NewDocumentReader(bytes.NewReader(cur.Current)))
+		decoder.ObjectIDAsHexString()
+		if err := decoder.Decode(&data); err != nil {
+			return nil, fmt.Errorf("failed to decode user: %w", err)
 		}
 
-		result = append(result, &data)
+		result = append(result, data)
 	}
 
 	return result, nil
@@ -45,22 +47,37 @@ func (user *UserService) GetAll() ([]*model.Users, error) {
 
 func (user *UserService) GetById(userId string) (*model.Users, error) {
 	result := new(model.Users)
-	obectId, _ := bson.ObjectIDFromHex(userId)
-	if err := user.FindOne(context.TODO(), bson.M{"_id": obectId}).Decode(result); err != nil {
-		return nil, err
+	obectId, err := bson.ObjectIDFromHex(userId)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user ID format: %w", err)
+	}
+
+	raw, err := user.FindOne(context.TODO(), bson.M{"_id": obectId}).Raw()
+	if err != nil {
+		return nil, fmt.Errorf("failed to find user: %w", err)
+	}
+
+	decoder := bson.NewDecoder(bson.NewDocumentReader(bytes.NewReader(raw)))
+	decoder.ObjectIDAsHexString()
+	if err := decoder.Decode(result); err != nil {
+		return nil, fmt.Errorf("failed to decode user: %w", err)
 	}
 
 	return result, nil
 
 }
 
-func (user *UserService) CreateOne(data model.Users) (*model.Users, error) {
+func (user *UserService) CreateOne(data model.NewUser) (*model.Users, error) {
 	res, err := user.InsertOne(context.TODO(), data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to insert user: %w", err)
 	}
 
-	fmt.Println(res)
+	datas := model.Users{
+		ID:    res.InsertedID.(bson.ObjectID).Hex(),
+		Name:  data.Name,
+		Email: data.Email,
+	}
 
-	return &data, nil
+	return &datas, nil
 }

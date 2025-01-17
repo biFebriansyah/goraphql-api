@@ -29,8 +29,6 @@ func main() {
 
 func graphServer() *handler.Server {
 	mongoDB := NewMongo()
-	// ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	// defer cancel()
 
 	userCollection := mongoDB.Collection("users")
 	userService := service.NewUserService(userCollection)
