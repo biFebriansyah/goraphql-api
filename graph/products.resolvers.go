@@ -12,32 +12,27 @@ import (
 
 // CreateProduct is the resolver for the createProduct field.
 func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewProduct) (*model.Products, error) {
-	data, err := r.ProductService.CreateOne(input)
-	if err != nil {
-		return nil, err
-	}
+	return r.ProductService.CreateOne(input)
+}
 
-	return data, nil
+// UpdateProduct is the resolver for the updateProduct field.
+func (r *mutationResolver) UpdateProduct(ctx context.Context, input model.UpdateProduct) (*model.Products, error) {
+	return r.ProductService.UpdateOne(input)
+}
+
+// DeleteProduct is the resolver for the deleteProduct field.
+func (r *mutationResolver) DeleteProduct(ctx context.Context, id string) (string, error) {
+	return r.ProductService.DeleteOne(id)
 }
 
 // Product is the resolver for the product field.
 func (r *queryResolver) Product(ctx context.Context, id string) (*model.Products, error) {
-	data, err := r.ProductService.GetById(id)
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
+	return r.ProductService.GetById(id)
 }
 
 // Products is the resolver for the products field.
-func (r *queryResolver) Products(ctx context.Context) ([]*model.Products, error) {
-	data, err := r.ProductService.GetAll()
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
+func (r *queryResolver) Products(ctx context.Context, page int32, limit int32, name *string) (*model.ProductDetail, error) {
+	return r.ProductService.GetAll(int64(page), int64(limit), name)
 }
 
 // Mutation returns MutationResolver implementation.

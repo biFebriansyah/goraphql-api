@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -18,7 +19,7 @@ type UserService struct {
 	*mongo.Collection
 }
 
-type FacetResult struct {
+type FacetUser struct {
 	Metadata []struct {
 		TotalCount int `bson:"totalCount"`
 	} `bson:"metadata"`
@@ -55,9 +56,9 @@ func (user *UserService) GetAll(page, limit int64, name *string) (*model.UsersDe
 		return nil, fmt.Errorf("failed to find user: %w", err)
 	}
 
-	var results []FacetResult
+	var results []FacetUser
 	for cursor.Next(ctx) {
-		var data FacetResult
+		var data FacetUser
 		decoder := bson.NewDecoder(bson.NewDocumentReader(bytes.NewReader(cursor.Current)))
 		decoder.ObjectIDAsHexString()
 		if err := decoder.Decode(&data); err != nil {
@@ -180,7 +181,14 @@ func (user *UserService) UpdateOne(data model.UpdateInput) (*model.Users, error)
 		return nil, fmt.Errorf("invalid user ID format: %w", err)
 	}
 
-	updateData := model.SignupInput{Name: data.Name, Email: *data.Email, Password: *data.Password}
+	updateData := bson.M{}
+	marshal, _ := json.Marshal(data)
+	err = json.Unmarshal(marshal, &updateData)
+	if err != nil {
+		return nil, fmt.Errorf("fail to unmarshal struct: %w", err)
+	}
+
+	delete(updateData, "_id")
 	res, err := user.FindOneAndUpdate(context.TODO(), bson.M{"_id": obectId}, bson.M{"$set": updateData}).Raw()
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user: %w", err)

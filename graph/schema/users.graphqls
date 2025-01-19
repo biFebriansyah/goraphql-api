@@ -42,7 +42,7 @@ input SigninInput {
 
 input UpdateInput {
   _id: String!
-  name: String!
+  name: String
   email: String
   password: String
 }

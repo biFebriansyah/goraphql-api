@@ -7,9 +7,20 @@ type Products {
   stock: Int!
 }
 
+type ProductMeta {
+  total: Int!
+  prev: Int!
+  next: Int!
+}
+
+type ProductDetail {
+  data: [Products!]!
+  meta: ProductMeta!
+}
+
 extend type Query {
   product(_id: String!): Products!
-  products: [Products!]!
+  products(page:Int!, limit:Int!, name: String): ProductDetail!
 }
 
 input NewProduct {
@@ -18,6 +29,15 @@ input NewProduct {
   stock: Int!
 }
 
+input UpdateProduct {
+  _id: String!
+  name: String
+  price: Int
+  stock: Int
+}
+
 extend type Mutation {
   createProduct(input: NewProduct!): Products!
+  updateProduct(input: UpdateProduct!): Products!
+  deleteProduct(_id: String!): String!
 }

@@ -11,6 +11,17 @@ type NewProduct struct {
 	Stock int32  `json:"stock" bson:"stock"`
 }
 
+type ProductDetail struct {
+	Data []*Products  `json:"data" bson:"data"`
+	Meta *ProductMeta `json:"meta" bson:"meta"`
+}
+
+type ProductMeta struct {
+	Total int32 `json:"total" bson:"total"`
+	Prev  int32 `json:"prev" bson:"prev"`
+	Next  int32 `json:"next" bson:"next"`
+}
+
 type Products struct {
 	ID    string `json:"_id" bson:"_id"`
 	Name  string `json:"name" bson:"name"`
@@ -35,9 +46,16 @@ type SignupInput struct {
 
 type UpdateInput struct {
 	ID       string  `json:"_id" bson:"_id"`
-	Name     string  `json:"name" bson:"name"`
+	Name     *string `json:"name,omitempty" bson:"name"`
 	Email    *string `json:"email,omitempty" bson:"email"`
 	Password *string `json:"password,omitempty" bson:"password"`
+}
+
+type UpdateProduct struct {
+	ID    string  `json:"_id" bson:"_id"`
+	Name  *string `json:"name,omitempty" bson:"name"`
+	Price *int32  `json:"price,omitempty" bson:"price"`
+	Stock *int32  `json:"stock,omitempty" bson:"stock"`
 }
 
 type UserMeta struct {
