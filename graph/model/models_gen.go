@@ -11,11 +11,6 @@ type NewProduct struct {
 	Stock int32  `json:"stock" bson:"stock"`
 }
 
-type NewUser struct {
-	Name  string `json:"name" bson:"name"`
-	Email string `json:"email" bson:"email"`
-}
-
 type Products struct {
 	ID    string `json:"_id" bson:"_id"`
 	Name  string `json:"name" bson:"name"`
@@ -26,8 +21,44 @@ type Products struct {
 type Query struct {
 }
 
+type SigninInput struct {
+	Email    string `json:"email" bson:"email"`
+	Password string `json:"password" bson:"password"`
+}
+
+type SignupInput struct {
+	Name     string `json:"name" bson:"name"`
+	Email    string `json:"email" bson:"email"`
+	Password string `json:"password" bson:"password"`
+	Admin    *bool  `json:"admin,omitempty" bson:"admin"`
+}
+
+type UpdateInput struct {
+	ID       string  `json:"_id" bson:"_id"`
+	Name     string  `json:"name" bson:"name"`
+	Email    *string `json:"email,omitempty" bson:"email"`
+	Password *string `json:"password,omitempty" bson:"password"`
+}
+
+type UserMeta struct {
+	Total int32 `json:"total" bson:"total"`
+	Prev  int32 `json:"prev" bson:"prev"`
+	Next  int32 `json:"next" bson:"next"`
+}
+
+type UserToken struct {
+	Token string `json:"token" bson:"token"`
+}
+
 type Users struct {
-	ID    string `json:"_id" bson:"_id"`
-	Name  string `json:"name" bson:"name"`
-	Email string `json:"email" bson:"email"`
+	ID       string `json:"_id" bson:"_id"`
+	Name     string `json:"name" bson:"name"`
+	Email    string `json:"email" bson:"email"`
+	Password string `json:"password" bson:"password"`
+	Admin    *bool  `json:"admin,omitempty" bson:"admin"`
+}
+
+type UsersDetail struct {
+	Data []*Users  `json:"data" bson:"data"`
+	Meta *UserMeta `json:"meta" bson:"meta"`
 }

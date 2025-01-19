@@ -4,18 +4,52 @@ type Users {
   _id: String!
   name: String!
   email: String!
+  password: String!
+  admin: Boolean
+}
+
+type UserMeta {
+  total: Int!
+  prev: Int!
+  next: Int!
+}
+
+type UserToken {
+  token: String!
+}
+
+type UsersDetail {
+  data: [Users!]!
+  meta: UserMeta!
 }
 
 extend type Query {
   user(_id: String!): Users!
-  users: [Users!]!
+  users(page:Int!, limit:Int!): UsersDetail!
 }
 
-input NewUser {
+input SignupInput {
   name: String!
   email: String!
+  password: String!
+  admin: Boolean
+}
+
+input SigninInput {
+  email: String!
+  password: String!
+}
+
+input UpdateInput {
+  _id: String!
+  name: String!
+  email: String
+  password: String
 }
 
 extend type Mutation {
-  createUser(input: NewUser!): Users!
+  signUp(input: SignupInput!): Users!
+  signIn(input: SignupInput!): UserToken!
+  updateUser(input: UpdateInput!): Users!
+  deleteUser(_id: String!): String!
 }
