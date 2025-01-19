@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"time"
@@ -28,19 +29,28 @@ func NewUserService(cln *mongo.Collection) *UserService {
 	return &UserService{cln}
 }
 
-func (user *UserService) GetAll(page, limit int64) (*model.UsersDetail, error) {
+func (user *UserService) GetAll(page, limit int64, name *string) (*model.UsersDetail, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
+	serachName := ""
+	if name != nil {
+		serachName = *name
+	}
+
+	matchParams := bson.D{{Key: "$match", Value: bson.D{{Key: "name", Value: bson.M{"$regex": serachName, "$options": "i"}}}}}
 	qurParams := bson.D{{
 		Key: "$facet",
 		Value: bson.M{
 			"metadata": bson.A{bson.M{"$count": "totalCount"}},
-			"data":     bson.A{bson.M{"$unset": bson.A{"password"}}, bson.M{"$skip": (page - 1) * limit}, bson.M{"$limit": limit}},
+			"data": bson.A{
+				bson.M{"$unset": bson.A{"password"}},
+				bson.M{"$skip": (page - 1) * limit},
+				bson.M{"$limit": limit}},
 		},
 	}}
 
-	cursor, err := user.Aggregate(ctx, mongo.Pipeline{qurParams})
+	cursor, err := user.Aggregate(ctx, mongo.Pipeline{matchParams, qurParams})
 	if err != nil {
 		return nil, fmt.Errorf("failed to find user: %w", err)
 	}
@@ -55,6 +65,10 @@ func (user *UserService) GetAll(page, limit int64) (*model.UsersDetail, error) {
 		}
 
 		results = append(results, data)
+	}
+
+	if len(results[0].Data) <= 0 {
+		return nil, fmt.Errorf("failed find data user: %w", errors.New("data not found"))
 	}
 
 	totalCount := results[0].Metadata[0].TotalCount

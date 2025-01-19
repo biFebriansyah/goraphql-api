@@ -66,7 +66,7 @@ type ComplexityRoot struct {
 		Product  func(childComplexity int, id string) int
 		Products func(childComplexity int) int
 		User     func(childComplexity int, id string) int
-		Users    func(childComplexity int, page int32, limit int32) int
+		Users    func(childComplexity int, page int32, limit int32, name *string) int
 	}
 
 	UserMeta struct {
@@ -104,7 +104,7 @@ type QueryResolver interface {
 	Product(ctx context.Context, id string) (*model.Products, error)
 	Products(ctx context.Context) ([]*model.Products, error)
 	User(ctx context.Context, id string) (*model.Users, error)
-	Users(ctx context.Context, page int32, limit int32) (*model.UsersDetail, error)
+	Users(ctx context.Context, page int32, limit int32, name *string) (*model.UsersDetail, error)
 }
 
 type executableSchema struct {
@@ -255,7 +255,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Users(childComplexity, args["page"].(int32), args["limit"].(int32)), true
+		return e.complexity.Query.Users(childComplexity, args["page"].(int32), args["limit"].(int32), args["name"].(*string)), true
 
 	case "UserMeta.next":
 		if e.complexity.UserMeta.Next == nil {
@@ -660,6 +660,11 @@ func (ec *executionContext) field_Query_users_args(ctx context.Context, rawArgs 
 		return nil, err
 	}
 	args["limit"] = arg1
+	arg2, err := ec.field_Query_users_argsName(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["name"] = arg2
 	return args, nil
 }
 func (ec *executionContext) field_Query_users_argsPage(
@@ -685,6 +690,19 @@ func (ec *executionContext) field_Query_users_argsLimit(
 	}
 
 	var zeroVal int32
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_users_argsName(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+	if tmp, ok := rawArgs["name"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
 	return zeroVal, nil
 }
 
@@ -1431,7 +1449,7 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Users(rctx, fc.Args["page"].(int32), fc.Args["limit"].(int32))
+		return ec.resolvers.Query().Users(rctx, fc.Args["page"].(int32), fc.Args["limit"].(int32), fc.Args["name"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

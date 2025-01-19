@@ -48,6 +48,6 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.Users, erro
 }
 
 // Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context, page int32, limit int32) (*model.UsersDetail, error) {
-	return r.UserService.GetAll(int64(page), int64(limit))
+func (r *queryResolver) Users(ctx context.Context, page int32, limit int32, name *string) (*model.UsersDetail, error) {
+	return r.UserService.GetAll(int64(page), int64(limit), name)
 }

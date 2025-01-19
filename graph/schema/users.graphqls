@@ -25,7 +25,7 @@ type UsersDetail {
 
 extend type Query {
   user(_id: String!): Users!
-  users(page:Int!, limit:Int!): UsersDetail!
+  users(page:Int!, limit:Int!, name:String): UsersDetail!
 }
 
 input SignupInput {
