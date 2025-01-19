@@ -49,7 +49,7 @@ input UpdateInput {
 
 extend type Mutation {
   signUp(input: SignupInput!): Users!
-  signIn(input: SignupInput!): UserToken!
+  signIn(input: SigninInput!): UserToken!
   updateUser(input: UpdateInput!): Users!
   deleteUser(_id: String!): String!
 }

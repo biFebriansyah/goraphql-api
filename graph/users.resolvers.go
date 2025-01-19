@@ -6,14 +6,16 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/biFebriansyah/goraphql/graph/model"
+	"github.com/biFebriansyah/goraphql/utils"
 )
 
 // SignUp is the resolver for the signUp field.
 func (r *mutationResolver) SignUp(ctx context.Context, input model.SignupInput) (*model.Users, error) {
-	pass, err := HashPassword(input.Password)
+	pass, err := utils.HashPassword(input.Password)
 	if err != nil {
 		return nil, fmt.Errorf("fail hasing password: %w", err)
 	}
@@ -23,14 +25,28 @@ func (r *mutationResolver) SignUp(ctx context.Context, input model.SignupInput) 
 }
 
 // SignIn is the resolver for the signIn field.
-func (r *mutationResolver) SignIn(ctx context.Context, input model.SignupInput) (*model.UserToken, error) {
-	panic(fmt.Errorf("not implemented: SignIn - signIn"))
+func (r *mutationResolver) SignIn(ctx context.Context, input model.SigninInput) (*model.UserToken, error) {
+	userData, err := r.UserService.GetByEmail(input.Email)
+	if err != nil {
+		return nil, errors.New("email not found")
+	}
+
+	if !utils.CheckPasswordHash(input.Password, userData.Password) {
+		return nil, errors.New("wrong password")
+	}
+
+	token, err := utils.GenerateJwt(userData.ID, *userData.Admin)
+	if err != nil {
+		return nil, fmt.Errorf("fail generate token: %w", err)
+	}
+
+	return &model.UserToken{Token: token}, nil
 }
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateInput) (*model.Users, error) {
 	if input.Password != nil {
-		pass, _ := HashPassword(*input.Password)
+		pass, _ := utils.HashPassword(*input.Password)
 		input.Password = &pass
 	}
 

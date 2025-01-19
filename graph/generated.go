@@ -51,7 +51,7 @@ type ComplexityRoot struct {
 		CreateProduct func(childComplexity int, input model.NewProduct) int
 		DeleteProduct func(childComplexity int, id string) int
 		DeleteUser    func(childComplexity int, id string) int
-		SignIn        func(childComplexity int, input model.SignupInput) int
+		SignIn        func(childComplexity int, input model.SigninInput) int
 		SignUp        func(childComplexity int, input model.SignupInput) int
 		UpdateProduct func(childComplexity int, input model.UpdateProduct) int
 		UpdateUser    func(childComplexity int, input model.UpdateInput) int
@@ -111,7 +111,7 @@ type MutationResolver interface {
 	UpdateProduct(ctx context.Context, input model.UpdateProduct) (*model.Products, error)
 	DeleteProduct(ctx context.Context, id string) (string, error)
 	SignUp(ctx context.Context, input model.SignupInput) (*model.Users, error)
-	SignIn(ctx context.Context, input model.SignupInput) (*model.UserToken, error)
+	SignIn(ctx context.Context, input model.SigninInput) (*model.UserToken, error)
 	UpdateUser(ctx context.Context, input model.UpdateInput) (*model.Users, error)
 	DeleteUser(ctx context.Context, id string) (string, error)
 }
@@ -187,7 +187,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SignIn(childComplexity, args["input"].(model.SignupInput)), true
+		return e.complexity.Mutation.SignIn(childComplexity, args["input"].(model.SigninInput)), true
 
 	case "Mutation.signUp":
 		if e.complexity.Mutation.SignUp == nil {
@@ -625,13 +625,13 @@ func (ec *executionContext) field_Mutation_signIn_args(ctx context.Context, rawA
 func (ec *executionContext) field_Mutation_signIn_argsInput(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (model.SignupInput, error) {
+) (model.SigninInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNSignupInput2githubᚗcomᚋbiFebriansyahᚋgoraphqlᚋgraphᚋmodelᚐSignupInput(ctx, tmp)
+		return ec.unmarshalNSigninInput2githubᚗcomᚋbiFebriansyahᚋgoraphqlᚋgraphᚋmodelᚐSigninInput(ctx, tmp)
 	}
 
-	var zeroVal model.SignupInput
+	var zeroVal model.SigninInput
 	return zeroVal, nil
 }
 
@@ -1211,7 +1211,7 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SignIn(rctx, fc.Args["input"].(model.SignupInput))
+		return ec.resolvers.Mutation().SignIn(rctx, fc.Args["input"].(model.SigninInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5681,6 +5681,11 @@ func (ec *executionContext) marshalNProducts2ᚖgithubᚗcomᚋbiFebriansyahᚋg
 		return graphql.Null
 	}
 	return ec._Products(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSigninInput2githubᚗcomᚋbiFebriansyahᚋgoraphqlᚋgraphᚋmodelᚐSigninInput(ctx context.Context, v any) (model.SigninInput, error) {
+	res, err := ec.unmarshalInputSigninInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNSignupInput2githubᚗcomᚋbiFebriansyahᚋgoraphqlᚋgraphᚋmodelᚐSignupInput(ctx context.Context, v any) (model.SignupInput, error) {
