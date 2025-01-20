@@ -1,1 +1,4 @@
 .env
+.env.docker
+uploads/*
+build/*
