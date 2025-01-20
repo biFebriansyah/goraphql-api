@@ -4,10 +4,8 @@ A backend service for managing simple data using graphql. Designed and developed
 
 ## Features
 
--   FFMPEG for processing, encoding, and segmenting of media files .
+-   Integration with Grahpql for client communication.
 -   CRUD operations for resource.
--   Integration with RabbitMQ for queue.
--   Real-time updates using WebSockets.
 -   Secure and optimized for production.
 
 ## Tech Stack
