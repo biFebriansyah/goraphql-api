@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/biFebriansyah/goraphql/graph"
@@ -34,7 +35,7 @@ func main() {
 	server.All("/query", restHandler.AuthMiddleware, adaptor.HTTPHandler(graphServer))
 	server.Get("/", adaptor.HTTPHandler(playground.Handler("GraphQL playground", "/query")))
 
-	if err := server.Listen(":8081"); err != nil {
+	if err := server.Listen(os.Getenv("APP_PORT")); err != nil {
 		log.Fatal(err)
 	}
 }

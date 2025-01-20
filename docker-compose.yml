@@ -1,0 +1,14 @@
+services:
+    backend:
+        image: bukanebi/goraphql:1
+        container_name: goraphql-service
+        restart: unless-stopped
+        ports:
+            - 8011:8081
+        networks:
+            - localnet
+
+networks:
+    localnet:
+        name: localnet
+        external: true

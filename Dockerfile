@@ -1,4 +1,4 @@
-FROM golang:1.23.3-alpine AS build
+FROM golang:1.23.4-alpine AS build
 
 WORKDIR /app
 
@@ -12,10 +12,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -v -o goapp .
 FROM alpine:latest AS release
 
 WORKDIR /app
-
-RUN mkdir -p ./uploads
-RUN mkdir -p ./output/encode
-RUN mkdir -p ./output/segment
 
 COPY --from=build /app/.env .
 COPY --from=build /app/goapp .
