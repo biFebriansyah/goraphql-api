@@ -20,7 +20,7 @@ func GenerateJwt(userId string, role bool) (string, error) {
 		Admin: role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "goraphql",
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute + 1)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 30)),
 		},
 	}
 

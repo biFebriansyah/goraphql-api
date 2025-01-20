@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -69,10 +70,11 @@ type ComplexityRoot struct {
 	}
 
 	Products struct {
-		ID    func(childComplexity int) int
-		Name  func(childComplexity int) int
-		Price func(childComplexity int) int
-		Stock func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Price     func(childComplexity int) int
+		Stock     func(childComplexity int) int
 	}
 
 	Query struct {
@@ -93,11 +95,12 @@ type ComplexityRoot struct {
 	}
 
 	Users struct {
-		Admin    func(childComplexity int) int
-		Email    func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Password func(childComplexity int) int
+		Admin     func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		Email     func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Password  func(childComplexity int) int
 	}
 
 	UsersDetail struct {
@@ -260,6 +263,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ProductMeta.Total(childComplexity), true
 
+	case "Products.created_at":
+		if e.complexity.Products.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Products.CreatedAt(childComplexity), true
+
 	case "Products._id":
 		if e.complexity.Products.ID == nil {
 			break
@@ -370,6 +380,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Users.Admin(childComplexity), true
+
+	case "Users.created_at":
+		if e.complexity.Users.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Users.CreatedAt(childComplexity), true
 
 	case "Users.email":
 		if e.complexity.Users.Email == nil {
@@ -992,6 +1009,8 @@ func (ec *executionContext) fieldContext_Mutation_createProduct(ctx context.Cont
 				return ec.fieldContext_Products_price(ctx, field)
 			case "stock":
 				return ec.fieldContext_Products_stock(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Products_created_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Products", field.Name)
 		},
@@ -1057,6 +1076,8 @@ func (ec *executionContext) fieldContext_Mutation_updateProduct(ctx context.Cont
 				return ec.fieldContext_Products_price(ctx, field)
 			case "stock":
 				return ec.fieldContext_Products_stock(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Products_created_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Products", field.Name)
 		},
@@ -1179,6 +1200,8 @@ func (ec *executionContext) fieldContext_Mutation_signUp(ctx context.Context, fi
 				return ec.fieldContext_Users_password(ctx, field)
 			case "admin":
 				return ec.fieldContext_Users_admin(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Users_created_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Users", field.Name)
 		},
@@ -1305,6 +1328,8 @@ func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context
 				return ec.fieldContext_Users_password(ctx, field)
 			case "admin":
 				return ec.fieldContext_Users_admin(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Users_created_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Users", field.Name)
 		},
@@ -1425,6 +1450,8 @@ func (ec *executionContext) fieldContext_ProductDetail_data(_ context.Context, f
 				return ec.fieldContext_Products_price(ctx, field)
 			case "stock":
 				return ec.fieldContext_Products_stock(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Products_created_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Products", field.Name)
 		},
@@ -1792,6 +1819,47 @@ func (ec *executionContext) fieldContext_Products_stock(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Products_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Products) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Products_created_at(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Products_created_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Products",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_product(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_product(ctx, field)
 	if err != nil {
@@ -1839,6 +1907,8 @@ func (ec *executionContext) fieldContext_Query_product(ctx context.Context, fiel
 				return ec.fieldContext_Products_price(ctx, field)
 			case "stock":
 				return ec.fieldContext_Products_stock(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Products_created_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Products", field.Name)
 		},
@@ -1967,6 +2037,8 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 				return ec.fieldContext_Users_password(ctx, field)
 			case "admin":
 				return ec.fieldContext_Users_admin(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Users_created_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Users", field.Name)
 		},
@@ -2568,6 +2640,47 @@ func (ec *executionContext) fieldContext_Users_admin(_ context.Context, field gr
 	return fc, nil
 }
 
+func (ec *executionContext) _Users_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Users) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Users_created_at(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Users_created_at(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Users",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _UsersDetail_data(ctx context.Context, field graphql.CollectedField, obj *model.UsersDetail) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UsersDetail_data(ctx, field)
 	if err != nil {
@@ -2617,6 +2730,8 @@ func (ec *executionContext) fieldContext_UsersDetail_data(_ context.Context, fie
 				return ec.fieldContext_Users_password(ctx, field)
 			case "admin":
 				return ec.fieldContext_Users_admin(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Users_created_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Users", field.Name)
 		},
@@ -4456,7 +4571,7 @@ func (ec *executionContext) unmarshalInputNewProduct(ctx context.Context, obj an
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "price", "stock"}
+	fieldsInOrder := [...]string{"name", "price", "stock", "created_at"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4484,6 +4599,13 @@ func (ec *executionContext) unmarshalInputNewProduct(ctx context.Context, obj an
 				return it, err
 			}
 			it.Stock = data
+		case "created_at":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("created_at"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
 		}
 	}
 
@@ -4531,7 +4653,7 @@ func (ec *executionContext) unmarshalInputSignupInput(ctx context.Context, obj a
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "email", "password", "admin"}
+	fieldsInOrder := [...]string{"name", "email", "password", "admin", "created_at"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4566,6 +4688,13 @@ func (ec *executionContext) unmarshalInputSignupInput(ctx context.Context, obj a
 				return it, err
 			}
 			it.Admin = data
+		case "created_at":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("created_at"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
 		}
 	}
 
@@ -4891,6 +5020,8 @@ func (ec *executionContext) _Products(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "created_at":
+			out.Values[i] = ec._Products_created_at(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5173,6 +5304,8 @@ func (ec *executionContext) _Users(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "admin":
 			out.Values[i] = ec._Users_admin(ctx, field, obj)
+		case "created_at":
+			out.Values[i] = ec._Users_created_at(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6122,6 +6255,22 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	res := graphql.MarshalString(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v any) (*time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalTime(*v)
 	return res
 }
 

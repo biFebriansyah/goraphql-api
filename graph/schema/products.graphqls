@@ -5,6 +5,7 @@ type Products {
   name: String!
   price: Int!
   stock: Int!
+  created_at: Time
 }
 
 type ProductMeta {
@@ -27,6 +28,7 @@ input NewProduct {
   name: String!
   price: Int!
   stock: Int!
+  created_at: Time
 }
 
 input UpdateProduct {

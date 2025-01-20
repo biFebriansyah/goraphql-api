@@ -1,4 +1,4 @@
-
+scalar Time
 
 type Users {
   _id: String!
@@ -6,6 +6,7 @@ type Users {
   email: String!
   password: String!
   admin: Boolean
+  created_at: Time
 }
 
 type UserMeta {
@@ -33,6 +34,7 @@ input SignupInput {
   email: String!
   password: String!
   admin: Boolean
+  created_at: Time
 }
 
 input SigninInput {

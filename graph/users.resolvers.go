@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/biFebriansyah/goraphql/graph/model"
 	"github.com/biFebriansyah/goraphql/utils"
@@ -15,12 +16,20 @@ import (
 
 // SignUp is the resolver for the signUp field.
 func (r *mutationResolver) SignUp(ctx context.Context, input model.SignupInput) (*model.Users, error) {
+	var notAdmin bool = false
+	var curentTime time.Time = time.Now()
+
 	pass, err := utils.HashPassword(input.Password)
 	if err != nil {
 		return nil, fmt.Errorf("fail hasing password: %w", err)
 	}
 
+	if input.Admin == nil {
+		input.Admin = &notAdmin
+	}
+
 	input.Password = pass
+	input.CreatedAt = &curentTime
 	return r.UserService.CreateOne(input)
 }
 

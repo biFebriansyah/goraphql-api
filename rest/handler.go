@@ -3,7 +3,9 @@ package rest
 import (
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/biFebriansyah/goraphql/graph/model"
 	"github.com/biFebriansyah/goraphql/graph/service"
 	"github.com/biFebriansyah/goraphql/utils"
 	"github.com/gofiber/fiber/v2"
@@ -34,6 +36,34 @@ func (rest *RestHandler) SignIn(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(fiber.Map{"token": token})
+}
+
+func (rest *RestHandler) SignUp(ctx *fiber.Ctx) error {
+	var notAdmin bool = false
+	var curentTime time.Time = time.Now()
+
+	body := new(model.SignupInput)
+	if err := ctx.BodyParser(body); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	pass, err := utils.HashPassword(body.Password)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if body.Admin == nil {
+		body.Admin = &notAdmin
+	}
+
+	body.Password = pass
+	body.CreatedAt = &curentTime
+	userData, err := rest.UserService.CreateOne(*body)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadGateway, err.Error())
+	}
+
+	return ctx.JSON(fiber.Map{"users": userData})
 }
 
 func (rest *RestHandler) AuthMiddleware(ctx *fiber.Ctx) error {

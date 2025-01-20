@@ -6,12 +6,15 @@ package graph
 
 import (
 	"context"
+	"time"
 
 	"github.com/biFebriansyah/goraphql/graph/model"
 )
 
 // CreateProduct is the resolver for the createProduct field.
 func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewProduct) (*model.Products, error) {
+	var curentTime time.Time = time.Now()
+	input.CreatedAt = &curentTime
 	return r.ProductService.CreateOne(input)
 }
 

@@ -2,13 +2,18 @@
 
 package model
 
+import (
+	"time"
+)
+
 type Mutation struct {
 }
 
 type NewProduct struct {
-	Name  string `json:"name" bson:"name"`
-	Price int32  `json:"price" bson:"price"`
-	Stock int32  `json:"stock" bson:"stock"`
+	Name      string     `json:"name" bson:"name"`
+	Price     int32      `json:"price" bson:"price"`
+	Stock     int32      `json:"stock" bson:"stock"`
+	CreatedAt *time.Time `json:"created_at,omitempty" bson:"created_at"`
 }
 
 type ProductDetail struct {
@@ -23,10 +28,11 @@ type ProductMeta struct {
 }
 
 type Products struct {
-	ID    string `json:"_id" bson:"_id"`
-	Name  string `json:"name" bson:"name"`
-	Price int32  `json:"price" bson:"price"`
-	Stock int32  `json:"stock" bson:"stock"`
+	ID        string     `json:"_id" bson:"_id"`
+	Name      string     `json:"name" bson:"name"`
+	Price     int32      `json:"price" bson:"price"`
+	Stock     int32      `json:"stock" bson:"stock"`
+	CreatedAt *time.Time `json:"created_at,omitempty" bson:"created_at"`
 }
 
 type Query struct {
@@ -38,10 +44,11 @@ type SigninInput struct {
 }
 
 type SignupInput struct {
-	Name     string `json:"name" bson:"name"`
-	Email    string `json:"email" bson:"email"`
-	Password string `json:"password" bson:"password"`
-	Admin    *bool  `json:"admin,omitempty" bson:"admin"`
+	Name      string     `json:"name" bson:"name"`
+	Email     string     `json:"email" bson:"email"`
+	Password  string     `json:"password" bson:"password"`
+	Admin     *bool      `json:"admin,omitempty" bson:"admin"`
+	CreatedAt *time.Time `json:"created_at,omitempty" bson:"created_at"`
 }
 
 type UpdateInput struct {
@@ -69,11 +76,12 @@ type UserToken struct {
 }
 
 type Users struct {
-	ID       string `json:"_id" bson:"_id"`
-	Name     string `json:"name" bson:"name"`
-	Email    string `json:"email" bson:"email"`
-	Password string `json:"password" bson:"password"`
-	Admin    *bool  `json:"admin,omitempty" bson:"admin"`
+	ID        string     `json:"_id" bson:"_id"`
+	Name      string     `json:"name" bson:"name"`
+	Email     string     `json:"email" bson:"email"`
+	Password  string     `json:"password" bson:"password"`
+	Admin     *bool      `json:"admin,omitempty" bson:"admin"`
+	CreatedAt *time.Time `json:"created_at,omitempty" bson:"created_at"`
 }
 
 type UsersDetail struct {

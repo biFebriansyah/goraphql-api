@@ -11,11 +11,13 @@ import (
 	"github.com/biFebriansyah/goraphql/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
 	server := fiber.New()
+	server.Use(cors.New())
 
 	mongoDB := utils.NewMongo()
 	userCollection := mongoDB.Collection("users")
@@ -30,6 +32,7 @@ func main() {
 
 	restHandler := rest.RestHandler{UserService: userService}
 	server.Post("/signin", restHandler.SignIn)
+	server.Post("/signup", restHandler.SignUp)
 
 	graphServer := graph.GraphServer(resolver)
 	server.All("/query", restHandler.AuthMiddleware, adaptor.HTTPHandler(graphServer))
