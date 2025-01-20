@@ -161,7 +161,18 @@ func (user *UserService) GetByEmail(email string) (*model.Users, error) {
 }
 
 func (user *UserService) CreateOne(data model.SignupInput) (*model.Users, error) {
-	res, err := user.InsertOne(context.TODO(), data)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	_, err := user.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys:    bson.D{{Key: "email", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create userIndex: %w", err)
+	}
+
+	res, err := user.InsertOne(ctx, data)
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert user: %w", err)
 	}
