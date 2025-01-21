@@ -54,9 +54,14 @@ func (r *mutationResolver) SignIn(ctx context.Context, input model.SigninInput) 
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateInput) (*model.Users, error) {
+	var notAdmin bool = false
 	if input.Password != nil {
 		pass, _ := utils.HashPassword(*input.Password)
 		input.Password = &pass
+	}
+
+	if input.Admin == nil {
+		input.Admin = &notAdmin
 	}
 
 	return r.UserService.UpdateOne(input)

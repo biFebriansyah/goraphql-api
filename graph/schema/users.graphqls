@@ -47,6 +47,7 @@ input UpdateInput {
   name: String
   email: String
   password: String
+  admin: Boolean
 }
 
 extend type Mutation {

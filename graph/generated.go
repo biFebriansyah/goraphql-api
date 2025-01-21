@@ -4708,7 +4708,7 @@ func (ec *executionContext) unmarshalInputUpdateInput(ctx context.Context, obj a
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"_id", "name", "email", "password"}
+	fieldsInOrder := [...]string{"_id", "name", "email", "password", "admin"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4743,6 +4743,13 @@ func (ec *executionContext) unmarshalInputUpdateInput(ctx context.Context, obj a
 				return it, err
 			}
 			it.Password = data
+		case "admin":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("admin"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Admin = data
 		}
 	}
 
